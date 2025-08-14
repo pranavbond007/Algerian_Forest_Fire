@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWI Prediction</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(120deg, #d4fc79, #96e6a1);
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2b7a78;
+        }
+        .note {
+            font-size: 0.85rem;
+            color: #555;
+        }
+        .result {
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .About-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: #fce4ec;
+            border-radius: 10px;
+        }
+        .About-section h2 {
+            color: #ad1457;
+        }
+        .low { background-color: #d4edda; color: #155724; }
+        .moderate { background-color: #fff3cd; color: #856404; }
+        .high { background-color: #ffeeba; color: #856404; }
+        .extreme { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔥 Algerian Forest Fire Prediction 🔥</h1>
+    <form action="{{ url_for('predict_datapoint') }}" method="post">
+        <div class="form-group">
+            <input type="number" class="form-control" name="Temperature" placeholder="Temperature (°C)" required>
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" name="RH" placeholder="Relative Humidity (%)" required>
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" name="Ws" placeholder="Wind Speed (km/h)" required>
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" name="Rain" placeholder="Rain (mm)" required>
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" name="FFMC" placeholder="FFMC Index (0–101)" required>
+            <small class="note">ℹ️ Higher = drier fine fuels, more flammable</small>
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" name="DMC" placeholder="DMC Index (0–300)" required>
+            <small class="note">ℹ️ Higher = drier deeper layers, more fuel</small>
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" name="ISI" placeholder="ISI Index" required>
+        </div>
+        <div class="form-group">
+            <select class="form-control" name="Classes" required>
+                <option value="" disabled selected>Select Fire Class</option>
+                <option value="0">No Fire - 0</option>
+                <option value="1">Fire - 1</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" name="Region" placeholder="Region (1 or 2)" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Predict</button>
+    </form>
+
+  {% if results is defined and results is not none %}
+    {% if results < 6 %}
+        <div class="result low">🔹 Low fire danger — risk is minimal.<br>FWI = {{ results }}</div>
+    {% elif results < 13 %}
+        <div class="result moderate">🟡 Moderate fire danger — be cautious.<br>FWI = {{ results }}</div>
+    {% elif results < 21 %}
+        <div class="result high">🟠 High fire danger — conditions support fire spread.<br>FWI = {{ results }}</div>
+    {% else %}
+        <div class="result extreme">🔴 Extreme fire danger — high risk of intense fires.<br>FWI = {{ results }}</div>
+    {% endif %}
+{% endif %}
+
+ <div class="About-section">
+        <h2>About the Algerian Forest Fires Dataset</h2>
+        <p>This dataset contains meteorological data from the Algerian forests (Bejaia and Sidi Bel-Abbes) for predicting Fire Weather Index (FWI) and identifying fire occurrences.</p>
+        <h4>Feature Descriptions:</h4>
+        <ul>
+            <li><strong>Temperature (°C):</strong> Daily average temperature.</li>
+            <li><strong>RH (%):</strong> Relative Humidity.</li>
+            <li><strong>WS (km/h):</strong> Wind Speed.</li>
+            <li><strong>Rain (mm):</strong> Rainfall amount.</li>
+            <li><strong>FFMC:</strong> Fine Fuel Moisture Code – moisture content of surface litter.</li>
+            <li><strong>DMC:</strong> Duff Moisture Code – moisture content in decomposed organic matter.</li>
+            <li><strong>ISI:</strong> Initial Spread Index – rate of fire spread.</li>
+            <li><strong>Classes:</strong> 0 = No Fire, 1 = Fire.</li>
+            <li><strong>Region:</strong> 1 = Bejaia Region, 2 = Sidi Bel-Abbes Region.</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
